@@ -1,0 +1,15 @@
+jfrog_url: "https://fbbd1.fb/artifactory/devops-local/downloads/splunk-forwarders"
+#splunk_lin: splunkforwarder-7.2.6-c0bf0f679ce9-Linux-x86_64
+splunk_forwarder_lin: "{{ jfrog_url }}/{{ splunk_lin }}"
+#splunk_win: splunkforwarder-7.2.6-c0bf0f679ce9-x64-release
+splunk_forwarder_win: "{{ jfrog_url }}/{{ splunk_win }}"
+splunk_lin_checksum: "sha256 or Sha1 or Md5"
+splunk_win_checksum: "sha256 or Sha1 or Md5"
+splunk_uf_system_user: splunk   #
+splunk_uf_system_group: "{{ splunk_uf_system_user }}" # Vars only if boot strap module is used.
+splunk_forwarder_sourcetype: "nginx"
+splunk_forwarder_enterprise: "splunk-enterprise:(port num of splunk enterprise)"
+splunk_forwarder_index: "default"  # dont know when, why use it and how to change it
+splunk_forwarder_logs: |
+  [monitor:///var/log/nginx/access.log*]
+  [monitor:///var/log/nginx/error.log*]
