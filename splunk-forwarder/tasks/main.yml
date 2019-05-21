@@ -1,0 +1,48 @@
+---
+- hosts: [install-splunk-forwarder-windows][install-splunk-forwarder-Redhat]
+ become: yes
+ gather_facts: yes
+ tasks:
+   - name: download forwarder files with check (sha256) from jfrog artifactory
+     get_url:
+      url: "{{ splunk_lin}}"
+      dest: "/opt/{{ splunk_lin }}"
+      checksum: "{{ splunk_lin_checksum }}"
+      when: ansible_os_family == "RedHat"
+
+   - name: Install Splunk (linux)
+     yum:
+      name: "/opt/{{ splunk_lin }}"
+      state: present
+      when: ansible_os_family == "Redhat"
+
+      #unzip the file module recquired or not??
+
+
+   - name: download forwarder files with check (sha256) from jfrog artifactory
+     get_url:
+      url: "{{ splunk_win}}"
+      dest: "/opt/splunkforwarder/{{ splunk_win }}"  # didnot understand why??
+      checksum: "{{ splunk_lin_checksum }}"
+      when: ansible_os_family == "windows"
+
+   - name: Install Splunk (Windows)
+     win_package:
+      path: "/opt/splunkforwarder/{{ splunk_win }}"
+      state: present
+      when: ansible_os_family == "Windows"
+
+    # unzip the file module recquired or not??
+
+   - name: Upload Splunk Systemd Script   ## IF systemd and boot-strap does the same thing
+     src: splunk.service              # Calls src from files folder
+     dest: /etc/systemd/system/splunkd.service
+     owner: 0
+     group: 0
+     mode: 0755
+     notify: Enable Splunk Forwarder
+     when: ansible_service_mgr == 'systemd'
+
+   - name: enable boot-start      # id systemd and boot-start are same thing why not call this simple module.
+     shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
+     when: splunk_uf_start_on_boot|bool
