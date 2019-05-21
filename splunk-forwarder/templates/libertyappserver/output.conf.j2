@@ -1,0 +1,8 @@
+[tcpout]
+defaultGroup = splunk
+disabled = false
+
+[tcpout:splunk]
+server = {{ splunk_enterprise }}
+
+[tcpout-server://{{ splunk_enterprise }}]
