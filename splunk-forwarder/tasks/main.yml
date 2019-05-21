@@ -10,7 +10,7 @@
       checksum: "{{ splunk_lin_checksum }}"
       when: ansible_os_family == "RedHat"
 
-   - name: Install Splunk (linux)
+   - name: Install Splunk-forwarder (linux)
      yum:
       name: "/opt/{{ splunk_lin }}"
       state: present
@@ -26,13 +26,29 @@
       checksum: "{{ splunk_lin_checksum }}"
       when: ansible_os_family == "windows"
 
-   - name: Install Splunk (Windows)
+   - name: Install Splunk-forwarder (Windows)
      win_package:
       path: "/opt/splunkforwarder/{{ splunk_win }}"
       state: present
       when: ansible_os_family == "Windows"
 
-    # unzip the file module recquired or not??
+    
+     
+   - name: Copy inputs file
+     template:
+      src: inputs.conf.j2
+      dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+       backup: yes
+       tags: config_copy
+       
+   - name: Copy outputs file
+     template:
+       src: outputs.conf.j2
+       dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+       backup: yes
+       tags: config_copy 
+       
+       # unzip the file module recquired or not??
 
    - name: Upload Splunk Systemd Script   ## IF systemd and boot-strap does the same thing
      src: splunk.service              # Calls src from files folder
@@ -46,3 +62,4 @@
    - name: enable boot-start      # id systemd and boot-start are same thing why not call this simple module.
      shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
      when: splunk_uf_start_on_boot|bool
+    
