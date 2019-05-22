@@ -1,0 +1,13 @@
+#yet to test this code
+- name: Splunk Universal forwarder instalation in Linux Based systems
+  hosts: all
+  remote_user: "{{ user }}"
+  become: yes
+  roles:
+    - splunk-forwarder-linux
+  vars:
+    version: "{{ version }}"
+
+
+#How to run this playbook
+#ansible-playbook -i hosts.ini  -e user=root -e version=2.6 linux-playbook.yml -k -K --tags "appserver"

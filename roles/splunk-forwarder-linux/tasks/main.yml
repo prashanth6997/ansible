@@ -1,65 +1,90 @@
 ---
-- hosts: [install-splunk-forwarder-windows][install-splunk-forwarder-Redhat]
- become: yes
- gather_facts: yes
- tasks:
-   - name: download forwarder files with check (sha256) from jfrog artifactory
-     get_url:
-      url: "{{ splunk_lin}}"
-      dest: "/opt/{{ splunk_lin }}"
-      checksum: "{{ splunk_lin_checksum }}"
-      when: ansible_os_family == "RedHat"
+# tasks file for jenkins-instalation
+- name: add splunk user group to system
+  group:
+    name: "{{ splunk_uf_system_group }}"
+    state: present
+  tags: [ 'always']
 
-   - name: Install Splunk-forwarder (linux)
-     yum:
-      name: "/opt/{{ splunk_lin }}"
-      state: present
-      when: ansible_os_family == "Redhat"
+- name: add splunk user
+  user:
+    name: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    comment: "Splunk service user"
+    shell: /usr/sbin/nologin
+  tags: [ 'always']
 
-      #unzip the file module recquired or not??
+- name: install splunk binary from remote url
+  unarchive:
+    src: "{{ jfrog_url_linux_forwarder }}"
+    dest: /opt
+    remote_src: yes
+    creates: /opt/splunkforwarder/bin/splunk
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+  tags: [ 'always']
 
+- name: accept license and start splunk
+  shell: /opt/splunkforwarder/bin/splunk start --answer-yes --no-prompt --accept-license
+  args:
+    executable: /bin/sh
+  become_user: "{{ splunk_uf_system_user }}"
+  tags: [ 'always']
 
-   - name: download forwarder files with check (sha256) from jfrog artifactory
-     get_url:
-      url: "{{ splunk_win}}"
-      dest: "/opt/splunkforwarder/{{ splunk_win }}"  # didnot understand why??
-      checksum: "{{ splunk_lin_checksum }}"
-      when: ansible_os_family == "windows"
+- name: enable boot-start
+  shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
+  when: splunk_uf_start_on_boot|bool
+  become: yes
+  tags: [ 'always']
 
-   - name: Install Splunk-forwarder (Windows)
-     win_package:
-      path: "/opt/splunkforwarder/{{ splunk_win }}"
-      state: present
-      when: ansible_os_family == "Windows"
+- name: install inputs.conf for webserver
+  template:
+    src: "{{ splunk_liberty_webserver_inputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    backup: yes
+    mode: 0644
+  when: splunk_liberty_webserver_inputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags: [ 'never', 'webserver' ]
 
-    
-     
-   - name: Copy inputs file
-     template:
-      src: inputs.conf.j2
-      dest: /opt/splunkforwarder/etc/system/local/inputs.conf
-       backup: yes
-       tags: config_copy
-       
-   - name: Copy outputs file
-     template:
-       src: outputs.conf.j2
-       dest: /opt/splunkforwarder/etc/system/local/outputs.conf
-       backup: yes
-       tags: config_copy 
-       
-       # unzip the file module recquired or not??
+- name: install inputs.conf for appserver
+  template:
+    src: "{{ splunk_liberty_appserver_inputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    backup: yes
+    mode: 0644
+  when: splunk_liberty_appserver_inputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags: [ 'never', 'appserver' ]
 
-   - name: Upload Splunk Systemd Script   ## IF systemd and boot-strap does the same thing
-     src: splunk.service              # Calls src from files folder
-     dest: /etc/systemd/system/splunkd.service
-     owner: 0
-     group: 0
-     mode: 0755
-     notify: Enable Splunk Forwarder
-     when: ansible_service_mgr == 'systemd'
+- name: install outputs.conf for webserver
+  template:
+    src: "{{ splunk_liberty_webserver_outputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    backup: yes
+    mode: 0644
+  when: splunk_liberty_webserver_outputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags: [ 'never', 'webserver' ]
 
-   - name: enable boot-start      # id systemd and boot-start are same thing why not call this simple module.
-     shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
-     when: splunk_uf_start_on_boot|bool
-    
+- name: install outputs.conf for app server
+  template:
+    src: "{{ splunk_liberty_appserver_outputs_conf_template }}"
+    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
+    owner: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    backup: yes
+    mode: 0644
+  when: splunk_liberty_appserver_outputs_conf_template | default(false)
+  notify:
+    - restart splunkforwarder
+  tags:  [ 'never', 'appserver' ]
