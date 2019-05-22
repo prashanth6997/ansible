@@ -10,4 +10,4 @@
 
 
 #How to run this playbook
-#ansible-playbook -i hosts.ini  -e user=root -e version=2.6 linux-playbook.yml -k -K --tags "appserver"
+#ansible-playbook -i hosts.ini  -e user=root -e version=2.6 linux-playbook.yml -k -K --tags "appserver|webserver"
