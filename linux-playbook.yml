@@ -1,5 +1,5 @@
 #yet to test this code
-- name: Splunk Universal forwarder instalation in Linux Based systems
+- name: Splunk Universal forwarder installation in Linux Based systems
   hosts: all
   remote_user: "{{ user }}"
   become: yes
