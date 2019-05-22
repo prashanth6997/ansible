@@ -11,10 +11,10 @@
     name: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_group }}"
     comment: "Splunk service user"
-    shell: /usr/sbin/nologin
+    shell: /usr/sbin/nologin    # Why this script 
   tags: [ 'always']
 
-- name: install splunk binary from remote url
+- name: install splunk forwarder binary from remote url
   unarchive:
     src: "{{ jfrog_url_linux_forwarder }}"
     dest: /opt
@@ -24,7 +24,7 @@
     group: "{{ splunk_uf_system_group }}"
   tags: [ 'always']
 
-- name: accept license and start splunk
+- name: accept license and start splunk forwarder
   shell: /opt/splunkforwarder/bin/splunk start --answer-yes --no-prompt --accept-license
   args:
     executable: /bin/sh
