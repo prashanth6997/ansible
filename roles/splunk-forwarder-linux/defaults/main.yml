@@ -1,7 +1,10 @@
 #Default value for the Required parameters
 
 #artifactory Binary URL's
-jfrog_url_linux_forwarder: "" #Provide full URL here to the binary
+jfrog_url_linux_forwarder: "{{ jfrog_url }}/{{ splunk_lin }}" 
+jfrog_url: "https://fbbd1.fb/artifactory/devops-local/downloads/splunk-forwarders"
+splunk_lin: splunkforwarder-7.2.6-c0bf0f679ce9-Linux-x86_64
+
 
 #Splunk user details
 splunk_uf_system_user: splunk
