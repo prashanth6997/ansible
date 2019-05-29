@@ -1,10 +1,3 @@
----
-- name: splunkforwarder #Enable Splunk Forwarder
-  service:
-    name: splunkd
-    enabled: yes
-    state: started
-
 # handlers file for splunk_forwarder
 - name: restart splunkforwarder
   service:
