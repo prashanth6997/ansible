@@ -1,9 +1,7 @@
 #Default value for the Required parameters
 
 #artifactory Binary URL's
-jfrog_url_linux_forwarder: "{{ jfrog_url }}/{{ splunk_lin }}" 
-jfrog_url: "https://fbbd1.fb/artifactory/devops-local/downloads/splunk-forwarders"
-splunk_lin: splunkforwarder-7.2.6-c0bf0f679ce9-Linux-x86_64.tgz
+jfrog_url_linux_forwarder: https://fbbd1.fb/artifactory/devops-local/downloads/splunk-forwarders/linux/splunk-7.2.6-c0bf0f679ce9-Linux-x86_64.tgz
 
 #Splunk user details
 splunk_uf_system_user: splunk
@@ -11,13 +9,13 @@ splunk_uf_system_group: "{{ splunk_uf_system_user }}"
 
 # Splunk forwarder enterprise URl: This value will render in the output.conf
 #splunk_forwarder_enterprise: "splunk-enterprise:(port num of splunk enterprise)"
-splunk_forwarder_indexer: "splunk-indexer:9997" #Splunk URl
+splunk_forwarder_indexer: "splunk-indexer:9248" #Splunk URl
 
 #On boot Yes
 splunk_uf_start_on_boot: yes
 # Vars only if boot strap module is used.
-splunk_forwarder_sourcetype: "default" # Can be any type like nginx and etc...
-splunk_forwarder_index: "default"  # dont know when, why use it and how to change it
+splunk_forwarder_sourcetype: "default"
+splunk_forwarder_index: "default" 
 
 
 #input and output.conf file variables for liberty app server
