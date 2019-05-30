@@ -3,25 +3,22 @@
 #artifactory Binary URL's
 jfrog_url_linux_forwarder: "{{ jfrog_url }}/{{ splunk_lin }}" 
 jfrog_url: "https://fbbd1.fb/artifactory/devops-local/downloads/splunk-forwarders"
-splunk_lin: splunkforwarder-7.2.6-c0bf0f679ce9-Linux-x86_64
-
+splunk_lin: splunkforwarder-7.2.6-c0bf0f679ce9-Linux-x86_64.tgz
 
 #Splunk user details
 splunk_uf_system_user: splunk
 splunk_uf_system_group: "{{ splunk_uf_system_user }}"
 
 # Splunk forwarder enterprise URl: This value will render in the output.conf
-splunk_forwarder_enterprise: "splunk-enterprise:(port num of splunk enterprise)"
+#splunk_forwarder_enterprise: "splunk-enterprise:(port num of splunk enterprise)"
+splunk_forwarder_indexer: "splunk-indexer:9997" #Splunk URl
 
-splunk_enterprise:
 #On boot Yes
 splunk_uf_start_on_boot: yes
 # Vars only if boot strap module is used.
-splunk_forwarder_sourcetype: "nginx"
+splunk_forwarder_sourcetype: "default" # Can be any type like nginx and etc...
 splunk_forwarder_index: "default"  # dont know when, why use it and how to change it
-splunk_forwarder_logs: |
-  [monitor:///var/log/nginx/access.log*]
-  [monitor:///var/log/nginx/error.log*]
+
 
 #input and output.conf file variables for liberty app server
 splunk_liberty_appserver_inputs_conf_template: libertyappserver-conf/inputs.conf.j2
@@ -37,77 +34,13 @@ splunk_liberty_webserver_outputs_conf_template: libertywebserver-conf/output.con
 splunk_webserver_inputs_conf_template: libertyappserver-conf/inputs.conf.j2
 # Input attributes below are all optional
 #Host file like Splunk URL
-splunk_uf_inputs_default_host: ""
-# The global default is $decideOnStartup, which will look at the current ipv4 address and supply that in the form
-# of ip-10-x-x-x
-splunk_uf_webserver_inputs_default_index: ""
-splunk_uf_webserver_inputs_default_extra_attributes: ""
-# Example of extra attributes within the default stanza:
-#   splunk_uf_inputs_default_extra_options: |
-#     whitelist = \.log$
-#     ignoreOlderThan = 7
 
-splunk_uf_appserver_inputs_default_index: ""
-splunk_uf_appserver_inputs_default_extra_attributes: ""
-# Example of extra attributes within the default stanza:
-#   splunk_uf_inputs_default_extra_options: |
-#     whitelist = \.log$
-#     ignoreOlderThan = 7
+#forwarder Logs Details
+splunk_forwarder_appserver_logs: |
+  [monitor:///opt/wlp/logs/.../*.log]
 
-splunk_uf_webserver_inputs_monitors: []
-# Example monitor:
-#   splunk_uf_inputs_monitors:
-#     - path: /var/log # leading // is included by template
-#       # These properties are only added if defined
-#       whitelist: \.log$
-#       blacklist: \.gz$
-#       ignoreOlderThan: 7
-#       recursive: false
-
-splunk_uf_appserver_inputs_monitors: []
-# Example monitor:
-#   splunk_uf_inputs_monitors:
-#     - path: /var/log # leading // is included by template
-#       # These properties are only added if defined
-#       whitelist: \.log$
-#       blacklist: \.gz$
-#       ignoreOlderThan: 7
-#       recursive: false
-
-splunk_uf_webserver_inputs_additional_forwarders: ""
-# Forwarders other than monitors, like:
-#   splunk_uf_inputs_additional_forwarders: |
-#     [tcp://:9995]
-#     connection_host = dns
-#     sourcetype = log4j
-#     source = tcp:9995
-
-splunk_uf_appserver_inputs_additional_forwarders: ""
-# Forwarders other than monitors, like:
-#   splunk_uf_inputs_additional_forwarders: |
-#     [tcp://:9995]
-#     connection_host = dns
-#     sourcetype = log4j
-#     source = tcp:9995
-
-
-# Configuration for outputs.conf
-# ---
-splunk_uf_outputs_conf_template: outputs.conf.j2
-# Output attributes below are all optional
-splunk_uf_outputs_default_group: ""
-splunk_uf_outputs_default_extra_attributes: ""
-# Example of extra options within default/tcp stanza:
-#   splunk_uf_outputs_default_extra_options: |
-#     compressed = true
-#     blockOnCloning = false
-#
-splunk_uf_outputs_target_groups: []
-# Example target group definition
-#   splunk_uf_outputs_target_groups:
-#     - name: group1
-#       server: localhost:9997
-#     - name: group2
-#       server: 10.0.1.1:9996, 10.0.1.2:9995
-#       # Only added if defined
-#       compressed = true
+splunk_forwarder_webserver_logs: |
+  [monitor:///opt/logs/.../access*]
+  [monitor:///opt/logs/.../error*]
+  [monitor:///opt/logs/.../http_plugin.log]
+  [monitor:///opt/WebSphereV7-efirstbank-443-*/Plugins/logs/efirstbank-443-*-server1*/http_plugin.log]
