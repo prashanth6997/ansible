@@ -1,0 +1,17 @@
+---
+# tasks file for splunk forwarder-installation
+- name: add splunk user group to system
+  win_group:
+    name: "{{ splunk_uf_system_group }}"  # Create new group or use the existing splunk group used for linux
+    state: present                        
+  tags: [ 'always']
+  
+- name: add splunk user
+  win_user_profile:                        # Create new user or use the existing user used for linux
+    username: "{{ splunk_uf_system_user }}"
+    group: "{{ splunk_uf_system_group }}"
+    comment: "Splunk service user"
+    shell: /usr/sbin/nologin                    # Use it ot remove it 
+    tags: [ 'always']
+    
+    
