@@ -15,16 +15,16 @@ splunk_forwarder_indexer: "splunk-indexer:9248" #Splunk URl
 splunk_uf_start_on_boot: yes
 # Vars only if boot strap module is used.
 splunk_forwarder_sourcetype: "default"
-splunk_forwarder_index: "default" 
+splunk_forwarder_index: "default"
 
 
 #input and output.conf file variables for liberty app server
-splunk_liberty_appserver_inputs_conf_template: libertyappserver-conf/inputs.conf.j2
-splunk_liberty_appserver_outputs_conf_template: libertyappserver-conf/output.conf.j2
+splunk_liberty_appserver_inputs_conf_template: inputs/inputs-appserver.conf.j2
+splunk_liberty_appserver_outputs_conf_template: outputs/output.conf.j2
 
 #input and output.conf file variables for liberty web server
-splunk_liberty_webserver_inputs_conf_template: libertywebserver-conf/inputs.conf.j2
-splunk_liberty_webserver_outputs_conf_template: libertywebserver-conf/output.conf.j2
+splunk_liberty_webserver_inputs_conf_template: inputs/inputs-webserver.conf.j2
+splunk_liberty_webserver_outputs_conf_template: outputs/output.conf.j2
 
 
 # Configuration for inputs.conf
