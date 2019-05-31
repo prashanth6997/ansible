@@ -11,7 +11,7 @@
     name: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_group }}"
     comment: "Splunk service user"
-    shell: /usr/sbin/nologin    # Why this script 
+    shell: /usr/sbin/nologin    # Why this script
   tags: [ 'always']
 
 - name: install splunk forwarder binary from remote url
@@ -19,7 +19,7 @@
     src: "{{ jfrog_url_linux_forwarder }}"
     dest: /opt
     remote_src: yes
-    creates: /opt/splunkforwarder/bin/splunk
+    creates: /opt/splunkforwarder
     owner: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_group }}"
   tags: [ 'always']
@@ -33,7 +33,7 @@
 
 - name: enable boot-start
   shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
-  when: splunk_uf_start_on_boot|bool
+  #when: splunk_uf_start_on_boot|bool
   become: yes
   tags: [ 'always']
 
@@ -45,7 +45,7 @@
     group: "{{ splunk_uf_system_group }}"
     backup: yes
     mode: 0644
-  when: splunk_liberty_webserver_inputs_conf_template | default(false)
+  #when: splunk_liberty_webserver_inputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags: [ 'never', 'webserver' ]
@@ -58,7 +58,7 @@
     group: "{{ splunk_uf_system_group }}"
     backup: yes
     mode: 0644
-  when: splunk_liberty_appserver_inputs_conf_template | default(false)
+  #when: splunk_liberty_appserver_inputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags: [ 'never', 'appserver' ]
@@ -71,7 +71,7 @@
     group: "{{ splunk_uf_system_group }}"
     backup: yes
     mode: 0644
-  when: splunk_liberty_webserver_outputs_conf_template | default(false)
+  #when: splunk_liberty_webserver_outputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags: [ 'never', 'webserver' ]
@@ -84,7 +84,7 @@
     group: "{{ splunk_uf_system_group }}"
     backup: yes
     mode: 0644
-  when: splunk_liberty_appserver_outputs_conf_template | default(false)
+  #when: splunk_liberty_appserver_outputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
   tags:  [ 'never', 'appserver' ]
