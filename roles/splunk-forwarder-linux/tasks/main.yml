@@ -4,7 +4,6 @@
   group:
     name: "{{ splunk_uf_system_group }}"
     state: present
-  tags: [ 'always']
 
 - name: add splunk user
   user:
@@ -12,7 +11,6 @@
     group: "{{ splunk_uf_system_group }}"
     comment: "Splunk service user"
     shell: /usr/sbin/nologin    # Why this script
-  tags: [ 'always']
 
 - name: install splunk forwarder binary from remote url
   unarchive:
@@ -22,24 +20,21 @@
     creates: /opt/splunkforwarder
     owner: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_group }}"
-  tags: [ 'always']
 
 - name: accept license and start splunk forwarder
   shell: /opt/splunkforwarder/bin/splunk start --answer-yes --no-prompt --accept-license
   args:
     executable: /bin/sh
   become_user: "{{ splunk_uf_system_user }}"
-  tags: [ 'always']
-
+  
 - name: enable boot-start
   shell: "/opt/splunkforwarder/bin/splunk enable boot-start -user {{ splunk_uf_system_user}}"
   #when: splunk_uf_start_on_boot|bool
   become: yes
-  tags: [ 'always']
 
 - name: install inputs.conf for webserver
   template:
-    src: "{{ splunk_liberty_webserver_inputs_conf_template }}"
+    src: "inputs/inputs-{{ type }}.conf.j2"
     dest: /opt/splunkforwarder/etc/system/local/inputs.conf
     owner: "{{ splunk_uf_system_user }}"
     group: "{{ splunk_uf_system_group }}"
@@ -48,33 +43,6 @@
   #when: splunk_liberty_webserver_inputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
-  tags: [ 'never', 'webserver' ]
-
-- name: install inputs.conf for appserver
-  template:
-    src: "{{ splunk_liberty_appserver_inputs_conf_template }}"
-    dest: /opt/splunkforwarder/etc/system/local/inputs.conf
-    owner: "{{ splunk_uf_system_user }}"
-    group: "{{ splunk_uf_system_group }}"
-    backup: yes
-    mode: 0644
-  #when: splunk_liberty_appserver_inputs_conf_template | default(false)
-  notify:
-    - restart splunkforwarder
-  tags: [ 'never', 'appserver' ]
-
-- name: install outputs.conf for webserver
-  template:
-    src: "{{ splunk_liberty_webserver_outputs_conf_template }}"
-    dest: /opt/splunkforwarder/etc/system/local/outputs.conf
-    owner: "{{ splunk_uf_system_user }}"
-    group: "{{ splunk_uf_system_group }}"
-    backup: yes
-    mode: 0644
-  #when: splunk_liberty_webserver_outputs_conf_template | default(false)
-  notify:
-    - restart splunkforwarder
-  tags: [ 'never', 'webserver' ]
 
 - name: install outputs.conf for app server
   template:
@@ -87,4 +55,4 @@
   #when: splunk_liberty_appserver_outputs_conf_template | default(false)
   notify:
     - restart splunkforwarder
-  tags:  [ 'never', 'appserver' ]
+    
