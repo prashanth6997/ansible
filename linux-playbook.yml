@@ -6,7 +6,7 @@
   roles:
     - splunk-forwarder-linux
   vars:
-    version: "{{ version }}"
+    type: "{{ type }}"
 
 #How to run this playbook
-#ansible-playbook -i hosts.ini  -e user=root -e version=2.6 linux-playbook.yml -k -K --tags "appserver|webserver"
+#ansible-playbook -i hosts.ini  -e user=root -e type=appserver|webserver linux-playbook.yml -k -K --tags "appserver|webserver"
